@@ -9,30 +9,39 @@ import {
   Table,
 } from 'sequelize-typescript';
 import { PlanDay } from '../../plan_day/entities/plan_day.entity';
+import { PLAN_REPOSITORY } from '../../../common/constants';
 
-export enum SexEnum {
-  Female = 'Mujer',
-  Male = 'Hombre',
+export enum GenderEnum {
+  Male = 'Male',
+  Female = 'Female',
+  Other = 'Other',
 }
 
 export enum AgeRangeEnum {
+  '13-17' = '13-17',
   '18-24' = '18-24',
   '25-34' = '25-34',
-  '35-54' = '35-54',
-  '55+' = '55+',
+  '35-44' = '35-44',
+  '45-54' = '45-54',
+  '55-64' = '55-64',
+  '+65' = '+65',
 }
 
-export enum LevelEnum {
-  Beginner = 'Principiante',
-  Intermediate = 'Intermedio',
-  Advanced = 'Avanzado',
+export enum ExperienceLevelEnum {
+  Beginner = 'Beginner',
+  Intermediate = 'Intermediate',
+  Advanced = 'Advanced',
 }
 
 export enum GoalEnum {
-  LoseWeight = 'Perder peso',
-  Tone = 'Tonificar',
-  MuscleMass = 'Masa muscular',
-  MuscleDefinition = 'Definicion muscular',
+  MuscleGain = 'Muscle Gain',
+  WeightLoss = 'Weight Loss',
+  Endurance = 'Endurance',
+  GeneralFitness = 'General Fitness',
+  Strength = 'Strength',
+  Flexibility = 'Flexibility',
+  SportsPerformance = 'Sports Performance',
+  Rehabilitation = 'Rehabilitation',
 }
 
 @Table
@@ -45,14 +54,30 @@ export class Plan extends Model<Plan> {
   @Column({ type: DataType.STRING(255) })
   name: string;
 
-  @Column({ type: DataType.ENUM(...Object.values(SexEnum)) })
-  sex: string;
+  @Column({ type: DataType.ENUM(...Object.values(GenderEnum)) })
+  gender: string;
 
   @Column({ type: DataType.ENUM(...Object.values(AgeRangeEnum)) })
   ageRange: string;
 
-  @Column({ type: DataType.ENUM(...Object.values(LevelEnum)) })
-  level: string;
+  @Column({ type: DataType.ENUM(...Object.values(ExperienceLevelEnum)) })
+  experienceLevel: string;
+
+  @Column({
+    type: DataType.INTEGER,
+    validate: {
+      isIn: [[1, 2, 3, 4, 5, 6, 7]],
+    },
+  })
+  daysPerWeek: number;
+
+  @Column({
+    type: DataType.INTEGER,
+    validate: {
+      isIn: [[0.5, 1, 2, 3, 4]],
+    },
+  })
+  hoursPerDay: number;
 
   @Column({
     type: DataType.ENUM(...Object.values(GoalEnum)),
@@ -62,3 +87,10 @@ export class Plan extends Model<Plan> {
   @HasMany(() => PlanDay)
   planDays: PlanDay[];
 }
+
+export const plansProviders = [
+  {
+    provide: PLAN_REPOSITORY,
+    useValue: Plan,
+  },
+];

@@ -1,17 +1,17 @@
+import { UUID } from 'crypto';
 import {
-  Table,
-  Column,
-  Model,
-  PrimaryKey,
-  AutoIncrement,
-  ForeignKey,
   BelongsTo,
+  Column,
   DataType,
   Default,
+  ForeignKey,
+  Model,
+  PrimaryKey,
+  Table,
 } from 'sequelize-typescript';
+import { PLAN_DAY_EXERCISE_REPOSITORY } from 'src/common/constants';
 import { Exercise } from '../../exercise/entities/exercise.entity';
 import { PlanDay } from '../../plan_day/entities/plan_day.entity';
-import { UUID } from 'crypto';
 
 @Table
 export class PlanDayExercise extends Model<PlanDayExercise> {
@@ -43,3 +43,10 @@ export class PlanDayExercise extends Model<PlanDayExercise> {
   @Column({ type: DataType.INTEGER })
   duration: number;
 }
+
+export const planDayExercisesProviders = [
+  {
+    provide: PLAN_DAY_EXERCISE_REPOSITORY,
+    useValue: PlanDayExercise,
+  },
+];

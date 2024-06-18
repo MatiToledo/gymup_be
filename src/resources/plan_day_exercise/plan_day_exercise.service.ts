@@ -1,26 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { CreatePlanDayExerciseDto } from './dto/create-plan_day_exercise.dto';
-import { UpdatePlanDayExerciseDto } from './dto/update-plan_day_exercise.dto';
+import { IPlanDayExerciseService } from './plan_day_exercise.interface';
+import { PlanDayExerciseRepository } from './plan_day_exercise.repository';
 
 @Injectable()
-export class PlanDayExerciseService {
-  create(createPlanDayExerciseDto: CreatePlanDayExerciseDto) {
-    return 'This action adds a new planDayExercise';
-  }
+export class PlanDayExerciseService implements IPlanDayExerciseService {
+  constructor(
+    private readonly planDayExerciseRepository: PlanDayExerciseRepository,
+  ) {}
 
   findAll() {
-    return `This action returns all planDayExercise`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} planDayExercise`;
-  }
-
-  update(id: number, updatePlanDayExerciseDto: UpdatePlanDayExerciseDto) {
-    return `This action updates a #${id} planDayExercise`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} planDayExercise`;
+    return this.planDayExerciseRepository.findAll();
   }
 }

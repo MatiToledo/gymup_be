@@ -10,22 +10,24 @@ import {
 } from 'sequelize-typescript';
 import { PlanDayExercise } from '../../plan_day_exercise/entities/plan_day_exercise.entity';
 import { UUID } from 'crypto';
+import { EXERCISE_REPOSITORY } from '../../../common/constants';
 
 export enum BodyPartTargetedEnum {
-  CHEST = 'Pecho',
-  BACK = 'Espalda',
+  CHEST = 'Chest',
+  BACK = 'Back',
   BICEPS = 'Biceps',
   TRICEPS = 'Triceps',
-  GLUTES = 'Gluteos',
-  LEGS = 'Piernas',
-  HAMSTRINGS = 'Isquios',
-  SHOULDERS = 'Hombros',
-  TWINS = 'Gemelos',
-  FULL_BODY = 'Cuerpo',
+  GLUTES = 'Glutes',
+  LEGS = 'Legs',
+  ARMS = 'Arms',
+  HAMSTRINGS = 'Hamstrings',
+  SHOULDERS = 'Shoulders',
+  TWINS = 'Twins',
+  FULL_BODY = 'Full Body',
   ABS = 'Abs',
-  CALVES = 'Pantorillas',
-  HIP = 'Cadera',
-  OBLIQUES = 'Oblicuos',
+  CALVES = 'Calves',
+  HIP = 'Hip',
+  OBLIQUES = 'Obliques',
   CARDIO = 'Cardio',
   CORE = 'Core',
 }
@@ -40,9 +42,6 @@ export class Exercise extends Model<Exercise> {
   @Column({ type: DataType.STRING(255), unique: true })
   name: string;
 
-  @Column({ type: DataType.TEXT })
-  description: string;
-
   @Column({
     type: DataType.ARRAY(DataType.ENUM(...Object.values(BodyPartTargetedEnum))),
   })
@@ -51,3 +50,10 @@ export class Exercise extends Model<Exercise> {
   @HasMany(() => PlanDayExercise)
   planDayExercises: PlanDayExercise[];
 }
+
+export const exercisesProviders = [
+  {
+    provide: EXERCISE_REPOSITORY,
+    useValue: Exercise,
+  },
+];

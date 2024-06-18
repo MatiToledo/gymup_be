@@ -1,16 +1,16 @@
 import { UUID } from 'crypto';
 import {
-  Table,
   Column,
-  Model,
-  DataType,
-  PrimaryKey,
-  Default,
   CreatedAt,
-  UpdatedAt,
+  DataType,
+  Default,
+  Model,
+  PrimaryKey,
+  Table,
   Unique,
+  UpdatedAt,
 } from 'sequelize-typescript';
-import { USERS_REPOSITORY } from '../../../common/constants';
+import { USER_REPOSITORY } from '../../../common/constants';
 
 @Table
 export class User extends Model<User> {
@@ -41,7 +41,7 @@ export class User extends Model<User> {
 
 export const usersProviders = [
   {
-    provide: USERS_REPOSITORY,
+    provide: USER_REPOSITORY,
     useValue: User,
   },
 ];

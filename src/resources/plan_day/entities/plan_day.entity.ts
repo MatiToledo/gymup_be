@@ -12,15 +12,16 @@ import {
 } from 'sequelize-typescript';
 import { Plan } from '../../plan/entities/plan.entity';
 import { PlanDayExercise } from '../../plan_day_exercise/entities/plan_day_exercise.entity';
+import { PLAN_DAY_REPOSITORY } from 'src/common/constants';
 
 export enum DayEnum {
-  Monday = 'Lunes',
-  Tuesday = 'Martes',
-  Wednesday = 'Miércoles',
-  Thursday = 'Jueves',
-  Friday = 'Viernes',
-  Saturday = 'Sábado',
-  Sunday = 'Domingo',
+  Monday = 'Monday',
+  Tuesday = 'Tuesday',
+  Wednesday = 'Wednesday',
+  Thursday = 'Thursday',
+  Friday = 'Friday',
+  Saturday = 'Saturday',
+  Sunday = 'Sunday',
 }
 
 @Table
@@ -45,3 +46,10 @@ export class PlanDay extends Model<PlanDay> {
   @HasMany(() => PlanDayExercise)
   planDayExercises: PlanDayExercise[];
 }
+
+export const planDaysProviders = [
+  {
+    provide: PLAN_DAY_REPOSITORY,
+    useValue: PlanDay,
+  },
+];

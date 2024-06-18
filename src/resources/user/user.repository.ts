@@ -1,12 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { USERS_REPOSITORY } from 'src/common/constants';
+import { USER_REPOSITORY } from '../../common/constants';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
 
 @Injectable()
 export class UserRepository {
   constructor(
-    @Inject(USERS_REPOSITORY)
+    @Inject(USER_REPOSITORY)
     private userModel: typeof User,
   ) {}
 
