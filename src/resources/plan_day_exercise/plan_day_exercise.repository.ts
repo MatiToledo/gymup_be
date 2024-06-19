@@ -1,4 +1,8 @@
-import { Inject, Injectable } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { PLAN_DAY_EXERCISE_REPOSITORY } from '../../common/constants';
 import { PlanDayExercise } from './entities/plan_day_exercise.entity';
 import { IPlanDayExerciseRepository } from './plan_day_exercise.interface';
@@ -10,7 +14,25 @@ export class PlanDayExerciseRepository implements IPlanDayExerciseRepository {
     private planDayExerciseModel: typeof PlanDayExercise,
   ) {}
 
+  async bulkCreate(data: Partial<PlanDayExercise>[]) {
+    try {
+      return this.planDayExerciseModel.bulkCreate(data);
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException(
+        'An error occurred while creating the plan days exercises',
+      );
+    }
+  }
+
   async findAll(): Promise<PlanDayExercise[]> {
-    return this.planDayExerciseModel.findAll();
+    try {
+      return this.planDayExerciseModel.findAll();
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException(
+        'An error occurred while fetching the plan days exercises',
+      );
+    }
   }
 }

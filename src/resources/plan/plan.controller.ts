@@ -11,6 +11,7 @@ import { PlanService } from './plan.service';
 import { CreatePlanDto } from './dto/create-plan.dto';
 import { UpdatePlanDto } from './dto/update-plan.dto';
 import { Public } from 'src/common/swagger/public.decorator';
+import { UUID } from 'crypto';
 
 @Controller('plan')
 export class PlanController {
@@ -27,9 +28,10 @@ export class PlanController {
     return this.planService.findAll();
   }
 
+  @Public()
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.planService.findOne(+id);
+  findOne(@Param('id') id: UUID) {
+    return this.planService.findOne(id);
   }
 
   @Patch(':id')

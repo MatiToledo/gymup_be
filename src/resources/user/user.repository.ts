@@ -1,7 +1,13 @@
-import { Inject, Injectable } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { USER_REPOSITORY } from '../../common/constants';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
+import { UUID } from 'crypto';
 
 @Injectable()
 export class UserRepository {
@@ -10,7 +16,7 @@ export class UserRepository {
     private userModel: typeof User,
   ) {}
 
-  async create(user: CreateUserDto): Promise<User> {
+  async create(user: Partial<User>): Promise<User> {
     return this.userModel.create(user);
   }
 
@@ -18,12 +24,41 @@ export class UserRepository {
     return this.userModel.findAll();
   }
 
+  async findOne(id: UUID): Promise<User> {
+    try {
+      const user = this.userModel.findOne({ where: { id }, raw: true });
+      if (!user) throw new NotFoundException(`User with ID ${id} not found`);
+      return user;
+    } catch (error) {
+      console.error('error: ', error);
+      if (error instanceof NotFoundException) {
+        throw error;
+      } else {
+        throw new InternalServerErrorException(
+          'An error occurred while fetching the user',
+        );
+      }
+    }
+  }
+
   async findByEmail(email: string): Promise<User> {
     try {
-      return this.userModel.findOne({ where: { email }, raw: true });
+      const user = await this.userModel.findOne({
+        where: { email },
+        raw: true,
+      });
+      if (!user)
+        throw new NotFoundException(`User with email ${email} not found`);
+      return user;
     } catch (error) {
-      console.log('error: ', error);
-      throw error;
+      console.error('error: ', error);
+      if (error instanceof NotFoundException) {
+        throw error;
+      } else {
+        throw new InternalServerErrorException(
+          'An error occurred while fetching the user',
+        );
+      }
     }
   }
 }

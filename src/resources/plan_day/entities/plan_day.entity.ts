@@ -12,7 +12,7 @@ import {
 } from 'sequelize-typescript';
 import { Plan } from '../../plan/entities/plan.entity';
 import { PlanDayExercise } from '../../plan_day_exercise/entities/plan_day_exercise.entity';
-import { PLAN_DAY_REPOSITORY } from 'src/common/constants';
+import { PLAN_DAY_REPOSITORY } from '../../../common/constants';
 
 export enum DayEnum {
   Monday = 'Monday',
@@ -33,7 +33,7 @@ export class PlanDay extends Model<PlanDay> {
 
   @ForeignKey(() => Plan)
   @Column(DataType.UUID)
-  planId: UUID;
+  PlanId: UUID;
 
   @BelongsTo(() => Plan)
   plan: Plan;

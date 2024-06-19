@@ -23,7 +23,7 @@ export class User extends Model<User> {
   name: string;
 
   @Column(DataType.STRING)
-  last_name: string;
+  lastName: string;
 
   @Unique
   @Column(DataType.STRING)
@@ -33,10 +33,10 @@ export class User extends Model<User> {
   password: string;
 
   @CreatedAt
-  created_date: Date;
+  createdAt: Date;
 
   @UpdatedAt
-  updated_date: Date;
+  updatedAt: Date;
 }
 
 export const usersProviders = [

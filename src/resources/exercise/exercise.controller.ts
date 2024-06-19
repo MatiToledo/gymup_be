@@ -6,9 +6,8 @@ import { ExerciseService } from './exercise.service';
 export class ExerciseController {
   constructor(private readonly exerciseService: ExerciseService) {}
 
-  @Public()
   @Get()
   findAll() {
-    return this.exerciseService.findAllNames();
+    return this.exerciseService.findAll();
   }
 }

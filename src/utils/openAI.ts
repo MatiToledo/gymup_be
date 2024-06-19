@@ -1,4 +1,11 @@
 import { OpenAI } from 'openai';
+import {
+  AgeRangeEnum,
+  ExperienceLevelEnum,
+  GenderEnum,
+  GoalEnum,
+} from 'src/resources/plan/entities/plan.entity';
+import { DayEnum } from 'src/resources/plan_day/entities/plan_day.entity';
 const openai = new OpenAI({ apiKey: process.env.OPEN_AI_API_KEY });
 
 type PrompData = {
@@ -30,8 +37,10 @@ export function generatePlanPrompt({
   The person wants to train ${daysPerWeek} days a week.
   The person wants to train ${hoursPerDay} hours each day.
   The person wants to warm up every day with one exercise from the list of possible exercises that is focused on cardio.
+  
   Considerations:
   1. The plan should be in JSON format.
+  2. The exercise names should be in the list of possible exercises.
   2. Exercises that are not warm-ups have rest time in seconds, repetitions, and sets in numbers, and duration should be null.
   3. The rest time should be in seconds.
   4. For warm-up exercises, add the duration in minutes and rest, repetitions, and sets should be null.
@@ -41,6 +50,7 @@ export function generatePlanPrompt({
   8. Ensure the total duration of exercises (including rest) meets the required ${hoursPerDay} hours of training each day.
   9. The quantity of repetitions and sets should be in number considering the goal of training and the time of training for each day.
   10. Choose between PPL, Upper/Lower and FullBody depending on the person's information to structure the plan.
+  
   Examples of Proper Formatting:
   {
     "name": "Name of the plan",
@@ -53,7 +63,7 @@ export function generatePlanPrompt({
     "hoursPerDay": "hours of training per day",
     "days": [
       {
-        "day": "day of the week",
+        "day": "day of the week (Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday)",
         "exercises": [
           {
             "name": "name of the exercise",
@@ -96,5 +106,28 @@ export async function generatePlanWithAI({
     model: 'gpt-4o',
     response_format: { type: 'json_object' },
   });
-  return chatCompletion.choices[0].message.content;
+  return JSON.parse(chatCompletion.choices[0].message.content);
+}
+
+export interface PlanAI {
+  name: string;
+  gender: string;
+  ageRange: string;
+  experienceLevel: string;
+  goal: string;
+  daysPerWeek: number;
+  planStructure: string;
+  hoursPerDay: number;
+  days: DayPlanAI[];
+}
+
+export interface DayPlanAI {
+  day: string;
+  exercises: {
+    name: string;
+    sets: number;
+    repetitions: number;
+    duration: number;
+    rest: number;
+  }[];
 }

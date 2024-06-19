@@ -9,7 +9,7 @@ import {
   PrimaryKey,
   Table,
 } from 'sequelize-typescript';
-import { PLAN_DAY_EXERCISE_REPOSITORY } from 'src/common/constants';
+import { PLAN_DAY_EXERCISE_REPOSITORY } from '../../../common/constants';
 import { Exercise } from '../../exercise/entities/exercise.entity';
 import { PlanDay } from '../../plan_day/entities/plan_day.entity';
 
@@ -22,14 +22,14 @@ export class PlanDayExercise extends Model<PlanDayExercise> {
 
   @ForeignKey(() => PlanDay)
   @Column(DataType.UUID)
-  planDayId: UUID;
+  PlanDayId: UUID;
 
   @BelongsTo(() => PlanDay)
   planDay: PlanDay;
 
   @ForeignKey(() => Exercise)
   @Column(DataType.UUID)
-  exerciseId: UUID;
+  ExerciseId: UUID;
 
   @BelongsTo(() => Exercise)
   exercise: Exercise;
@@ -42,6 +42,9 @@ export class PlanDayExercise extends Model<PlanDayExercise> {
 
   @Column({ type: DataType.INTEGER })
   duration: number;
+
+  @Column({ type: DataType.INTEGER })
+  rest: number;
 }
 
 export const planDayExercisesProviders = [

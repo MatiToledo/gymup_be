@@ -1,7 +1,7 @@
 import { Exercise } from './entities/exercise.entity';
 
 export interface IExerciseService {
-  findAllNames(): Promise<string[]>;
+  findAll(): Promise<Exercise[]>;
 }
 
 export interface IExerciseRepository {
