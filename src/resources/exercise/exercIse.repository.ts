@@ -1,4 +1,8 @@
-import { Inject, Injectable } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { EXERCISE_REPOSITORY } from '../../common/constants';
 import { Exercise } from './entities/exercise.entity';
 import { IExerciseRepository } from './exercise.interface';
@@ -11,6 +15,11 @@ export class ExerciseRepository implements IExerciseRepository {
   ) {}
 
   async findAll(): Promise<Exercise[]> {
-    return this.exerciseModel.findAll();
+    try {
+      return this.exerciseModel.findAll();
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException('common.internalServerError');
+    }
   }
 }

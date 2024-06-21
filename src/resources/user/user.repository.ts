@@ -1,42 +1,54 @@
 import {
+  HttpException,
+  HttpStatus,
   Inject,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { USER_REPOSITORY } from '../../common/constants';
-import { CreateUserDto } from './dto/create-user.dto';
-import { User } from './entities/user.entity';
 import { UUID } from 'crypto';
+import { I18nContext, I18nService } from 'nestjs-i18n';
+import { USER_REPOSITORY } from '../../common/constants';
+import { LogInDto } from '../auth/dto/log_in.dto';
+import { User } from './entities/user.entity';
 
 @Injectable()
 export class UserRepository {
   constructor(
     @Inject(USER_REPOSITORY)
     private userModel: typeof User,
+    private readonly i18n: I18nService,
   ) {}
 
-  async create(user: Partial<User>): Promise<User> {
-    return this.userModel.create(user);
+  async create(user: LogInDto): Promise<User> {
+    try {
+      return await this.userModel.create(user);
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException('common.internalServerError');
+    }
   }
 
   async findAll(): Promise<User[]> {
-    return this.userModel.findAll();
+    try {
+      return await this.userModel.findAll();
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException('common.internalServerError');
+    }
   }
 
   async findOne(id: UUID): Promise<User> {
     try {
-      const user = this.userModel.findOne({ where: { id }, raw: true });
-      if (!user) throw new NotFoundException(`User with ID ${id} not found`);
+      const user = await this.userModel.findOne({ where: { id }, raw: true });
+      if (!user) throw new NotFoundException('common.user.notFound');
       return user;
     } catch (error) {
-      console.error('error: ', error);
+      console.error(error);
       if (error instanceof NotFoundException) {
         throw error;
       } else {
-        throw new InternalServerErrorException(
-          'An error occurred while fetching the user',
-        );
+        throw new InternalServerErrorException('common.internalServerError');
       }
     }
   }
@@ -47,17 +59,33 @@ export class UserRepository {
         where: { email },
         raw: true,
       });
-      if (!user)
-        throw new NotFoundException(`User with email ${email} not found`);
+      if (!user) throw new NotFoundException('common.user.notFound');
       return user;
     } catch (error) {
-      console.error('error: ', error);
+      console.error(error);
       if (error instanceof NotFoundException) {
         throw error;
       } else {
-        throw new InternalServerErrorException(
-          'An error occurred while fetching the user',
+        throw new InternalServerErrorException('common.internalServerError');
+      }
+    }
+  }
+
+  async checkIfAlreadyExists(email: string): Promise<void> {
+    try {
+      const user = await this.userModel.findOne({ where: { email } });
+      if (user)
+        throw new HttpException(
+          'common.user.alreadyExists',
+          HttpStatus.CONFLICT,
         );
+      return;
+    } catch (error) {
+      console.error(error);
+      if (error instanceof HttpException) {
+        throw error;
+      } else {
+        throw new InternalServerErrorException('common.internalServerError');
       }
     }
   }

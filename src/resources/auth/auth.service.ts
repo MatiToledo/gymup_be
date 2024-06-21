@@ -3,6 +3,7 @@ import * as bcrypt from 'bcrypt';
 import { User } from '../user/entities/user.entity';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
+import { LogInDto } from './dto/log_in.dto';
 
 @Injectable()
 export class AuthService {
@@ -12,7 +13,7 @@ export class AuthService {
   ) {}
   saltOrRounds: number = 10;
 
-  async logUp(body: Partial<User>) {
+  async logIn(body: LogInDto) {
     body.password = await bcrypt.hash(body.password, this.saltOrRounds);
     return this.userService.create(body);
   }

@@ -79,34 +79,78 @@ export function generatePlanPrompt({
     `;
 }
 
-export async function generatePlanWithAI({
-  goal,
-  ageRange,
-  gender,
-  experienceLevel,
-  daysPerWeek,
-  hoursPerDay,
-  allExercises,
-}: PrompData) {
-  const chatCompletion = await openai.chat.completions.create({
-    messages: [
-      {
-        role: 'system',
-        content: generatePlanPrompt({
-          ageRange,
-          gender,
-          experienceLevel,
-          goal,
-          daysPerWeek,
-          hoursPerDay,
-          allExercises,
-        }),
-      },
-    ],
-    model: 'gpt-4o',
-    response_format: { type: 'json_object' },
-  });
-  return JSON.parse(chatCompletion.choices[0].message.content);
+export async function generateValidPlanWithAI(
+  data: PrompData,
+): Promise<PlanAI> {
+  let plan: PlanAI;
+  const maxAttempts = 5;
+  let attempts = 0;
+
+  do {
+    const chatCompletion = await openai.chat.completions.create({
+      messages: [
+        {
+          role: 'system',
+          content: generatePlanPrompt(data),
+        },
+      ],
+      model: 'gpt-4o',
+      response_format: { type: 'json_object' },
+    });
+
+    plan = JSON.parse(chatCompletion.choices[0].message.content);
+
+    attempts += 1;
+
+    if (attempts >= maxAttempts) {
+      throw new Error(
+        'Failed to generate a valid plan after multiple attempts.',
+      );
+    }
+  } while (!validatePlan(plan));
+
+  return plan;
+}
+
+function validatePlan(plan: any): plan is PlanAI {
+  if (
+    typeof plan.name !== 'string' ||
+    typeof plan.gender !== 'string' ||
+    typeof plan.ageRange !== 'string' ||
+    typeof plan.experienceLevel !== 'string' ||
+    typeof plan.goal !== 'string' ||
+    typeof plan.daysPerWeek !== 'number' ||
+    typeof plan.planStructure !== 'string' ||
+    typeof plan.hoursPerDay !== 'number' ||
+    !Array.isArray(plan.days)
+  ) {
+    return false;
+  }
+
+  for (const day of plan.days) {
+    if (
+      typeof day.day !== 'string' ||
+      !Object.values(DayEnum).includes(day.day) ||
+      !Array.isArray(day.exercises)
+    ) {
+      return false;
+    }
+
+    for (const exercise of day.exercises) {
+      if (
+        typeof exercise.name !== 'string' ||
+        (exercise.sets !== null && typeof exercise.sets !== 'number') ||
+        (exercise.repetitions !== null &&
+          typeof exercise.repetitions !== 'number') ||
+        (exercise.duration !== null && typeof exercise.duration !== 'number') ||
+        (exercise.rest !== null && typeof exercise.rest !== 'number')
+      ) {
+        return false;
+      }
+    }
+  }
+
+  return true;
 }
 
 export interface PlanAI {

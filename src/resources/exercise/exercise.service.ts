@@ -7,14 +7,6 @@ export class ExerciseService implements IExerciseService {
   constructor(private readonly exerciseRepository: ExerciseRepository) {}
 
   async findAll() {
-    try {
-      const exercises = await this.exerciseRepository.findAll();
-      return exercises.map((exercise) => exercise.name) as any;
-    } catch (error) {
-      console.error(error);
-      throw new InternalServerErrorException(
-        'An error occurred while fetching the exercises',
-      );
-    }
+    return await this.exerciseRepository.findAll();
   }
 }

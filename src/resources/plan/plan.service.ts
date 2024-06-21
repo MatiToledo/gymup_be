@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { CreatePlanDto } from './dto/create-plan.dto';
-import { UpdatePlanDto } from './dto/update-plan.dto';
-import { generatePlanWithAI, PlanAI } from 'src/utils/openAI';
+import { UUID } from 'crypto';
+import { generateValidPlanWithAI, PlanAI } from 'src/utils/openAI';
 import { ExerciseService } from '../exercise/exercise.service';
-import { PlanRepository } from './plan.repository';
 import { PlanDayService } from '../plan_day/plan_day.service';
 import { PlanDayExerciseService } from '../plan_day_exercise/plan_day_exercise.service';
-import { UUID } from 'crypto';
+import { CreatePlanDto } from './dto/create-plan.dto';
+import { UpdatePlanDto } from './dto/update-plan.dto';
+import { PlanRepository } from './plan.repository';
 
 @Injectable()
 export class PlanService {
@@ -19,11 +19,10 @@ export class PlanService {
 
   async create(createPlanDto: CreatePlanDto) {
     const allExercises = await this.exerciseService.findAll();
-    const ai_plan: PlanAI = await generatePlanWithAI({
+    const ai_plan: PlanAI = await generateValidPlanWithAI({
       ...createPlanDto,
       allExercises: allExercises.map((e) => e.name),
     });
-    console.log('ai_plan: ', ai_plan);
 
     const createdPlan = await this.planRepository.create({
       name: ai_plan.name,
@@ -39,6 +38,7 @@ export class PlanService {
       PlanId: createdPlan.id,
       day: day.day,
     }));
+
     const createdPlanDays = await this.planDayService.bulkCreate(planDayBulk);
     const planDayExerciseBulk =
       this.planDayExerciseService.generateBulkCreateData(
@@ -52,19 +52,7 @@ export class PlanService {
     return await this.planRepository.findById(createdPlan.id);
   }
 
-  findAll() {
-    return `This action returns all plan`;
-  }
-
   async findOne(id: UUID) {
     return await this.planRepository.findById(id);
-  }
-
-  update(id: number, updatePlanDto: UpdatePlanDto) {
-    return `This action updates a #${id} plan`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} plan`;
   }
 }

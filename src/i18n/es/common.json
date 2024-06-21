@@ -1,0 +1,7 @@
+{
+  "internalServerError": "Hubo un error inesperado, por favor vuelve a intentarlo",
+  "user": {
+    "alreadyExists": "Ya existe un usuario con este correo",
+    "notFound": "Usuario no encontrado"
+  }
+}

@@ -20,11 +20,21 @@ export class PlanRepository implements IPlanRepository {
   ) {}
 
   findAll(): Promise<Plan[]> {
-    return this.planModel.findAll();
+    try {
+      return this.planModel.findAll();
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException('common.internalServerError');
+    }
   }
 
   create(data: Partial<Plan>): Promise<Plan> {
-    return this.planModel.create(data);
+    try {
+      return this.planModel.create(data);
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException('common.internalServerError');
+    }
   }
 
   findById(id: UUID): Promise<Plan> {
@@ -40,7 +50,7 @@ export class PlanRepository implements IPlanRepository {
         ],
       });
       if (!plan) {
-        throw new NotFoundException(`Plan with ID ${id} not found`);
+        throw new NotFoundException(`common.plan.notFound`);
       }
       return plan;
     } catch (error) {
@@ -48,9 +58,7 @@ export class PlanRepository implements IPlanRepository {
       if (error instanceof NotFoundException) {
         throw error;
       } else {
-        throw new InternalServerErrorException(
-          'An error occurred while fetching the plan',
-        );
+        throw new InternalServerErrorException('common.internalServerError');
       }
     }
   }

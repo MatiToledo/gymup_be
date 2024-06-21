@@ -6,6 +6,7 @@ import { AllExceptionFilter } from './common/filter/exception.filter';
 import { LoggerService } from './common/logger/logger.service';
 import { LoggingInterceptor } from './common/interceptors/logger.interceptor';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
+import { I18nService } from 'nestjs-i18n';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -19,7 +20,12 @@ async function bootstrap() {
   );
 
   // Filter
-  app.useGlobalFilters(new AllExceptionFilter(new LoggerService()));
+  const i18nService =
+    app.get<I18nService<Record<string, unknown>>>(I18nService);
+
+  app.useGlobalFilters(
+    new AllExceptionFilter(new LoggerService(), i18nService),
+  );
 
   // interceptors
   app.useGlobalInterceptors(new LoggingInterceptor(new LoggerService()));
