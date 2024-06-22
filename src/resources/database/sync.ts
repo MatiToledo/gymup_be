@@ -530,8 +530,8 @@ const gymExercises = [
 async function syncDatabase() {
   try {
     sequelize.addModels([User, Exercise, Plan, PlanDay, PlanDayExercise]);
-    await sequelize.sync({ force: true }).then(async () => {
-      await Exercise.bulkCreate(gymExercises);
+    await sequelize.sync({ alter: true }).then(async () => {
+      // await Exercise.bulkCreate(gymExercises);
       console.log('Database synced successfully');
     });
   } catch (error) {

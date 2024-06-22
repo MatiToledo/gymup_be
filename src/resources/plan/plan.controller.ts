@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Request,
 } from '@nestjs/common';
 import { PlanService } from './plan.service';
 import { CreatePlanDto } from './dto/create-plan.dto';
@@ -19,8 +20,8 @@ export class PlanController {
 
   @Public()
   @Post()
-  create(@Body() createPlanDto: CreatePlanDto) {
-    return this.planService.create(createPlanDto);
+  create(@Request() req, @Body() createPlanDto: CreatePlanDto) {
+    return this.planService.create(createPlanDto, req.user.id);
   }
 
   @Public()

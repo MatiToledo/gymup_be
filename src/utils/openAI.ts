@@ -116,9 +116,13 @@ function validatePlan(plan: any): plan is PlanAI {
   if (
     typeof plan.name !== 'string' ||
     typeof plan.gender !== 'string' ||
+    // !Object.values(GenderEnum).includes(plan.gender) ||
     typeof plan.ageRange !== 'string' ||
+    // !Object.values(AgeRangeEnum).includes(plan.ageRange) ||
     typeof plan.experienceLevel !== 'string' ||
+    // !Object.values(ExperienceLevelEnum).includes(plan.experienceLevel) ||
     typeof plan.goal !== 'string' ||
+    // !Object.values(GoalEnum).includes(plan.goal) ||
     typeof plan.daysPerWeek !== 'number' ||
     typeof plan.planStructure !== 'string' ||
     typeof plan.hoursPerDay !== 'number' ||

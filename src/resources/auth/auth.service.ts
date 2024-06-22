@@ -29,7 +29,7 @@ export class AuthService {
     const payload = { email: user.email, id: user.id };
     const AccessToken = this.jwtService.sign(payload, {
       secret: process.env.JWT_SECRET,
-      expiresIn: '1h',
+      expiresIn: '7d',
     });
     return {
       access_token: AccessToken,

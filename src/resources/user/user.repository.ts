@@ -11,6 +11,10 @@ import { I18nContext, I18nService } from 'nestjs-i18n';
 import { USER_REPOSITORY } from '../../common/constants';
 import { LogInDto } from '../auth/dto/log_in.dto';
 import { User } from './entities/user.entity';
+import { Exercise } from '../exercise/entities/exercise.entity';
+import { PlanDay } from '../plan_day/entities/plan_day.entity';
+import { PlanDayExercise } from '../plan_day_exercise/entities/plan_day_exercise.entity';
+import { Plan } from '../plan/entities/plan.entity';
 
 @Injectable()
 export class UserRepository {
@@ -38,7 +42,37 @@ export class UserRepository {
     }
   }
 
-  async findOne(id: UUID): Promise<User> {
+  async findMe(id: UUID): Promise<User> {
+    try {
+      const user = await this.userModel.findOne({
+        where: { id },
+        include: [
+          {
+            model: Plan,
+            where: { isCurrent: true },
+            include: [
+              {
+                model: PlanDay,
+                include: [
+                  { model: PlanDayExercise, include: [{ model: Exercise }] },
+                ],
+              },
+            ],
+          },
+        ],
+      });
+      if (!user) throw new NotFoundException('common.user.notFound');
+      return user;
+    } catch (error) {
+      console.error(error);
+      if (error instanceof NotFoundException) {
+        throw error;
+      } else {
+        throw new InternalServerErrorException('common.internalServerError');
+      }
+    }
+  }
+  async findById(id: UUID): Promise<User> {
     try {
       const user = await this.userModel.findOne({ where: { id }, raw: true });
       if (!user) throw new NotFoundException('common.user.notFound');
@@ -57,6 +91,9 @@ export class UserRepository {
     try {
       const user = await this.userModel.findOne({
         where: { email },
+        attributes: {
+          include: ['password'],
+        },
         raw: true,
       });
       if (!user) throw new NotFoundException('common.user.notFound');

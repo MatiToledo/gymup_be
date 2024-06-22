@@ -1,8 +1,10 @@
 import { UUID } from 'crypto';
 import {
+  BelongsTo,
   Column,
   DataType,
   Default,
+  ForeignKey,
   HasMany,
   Model,
   PrimaryKey,
@@ -10,6 +12,7 @@ import {
 } from 'sequelize-typescript';
 import { PlanDay } from '../../plan_day/entities/plan_day.entity';
 import { PLAN_REPOSITORY } from '../../../common/constants';
+import { User } from '../../user/entities/user.entity';
 
 export enum GenderEnum {
   Male = 'Male',
@@ -63,6 +66,10 @@ export class Plan extends Model<Plan> {
   @Column({ type: DataType.ENUM(...Object.values(ExperienceLevelEnum)) })
   experienceLevel: string;
 
+  @Default(true)
+  @Column({ type: DataType.BOOLEAN })
+  isCurrent: boolean;
+
   @Column({
     type: DataType.INTEGER,
     validate: {
@@ -86,6 +93,13 @@ export class Plan extends Model<Plan> {
 
   @HasMany(() => PlanDay)
   planDays: PlanDay[];
+
+  @ForeignKey(() => User)
+  @Column({ type: DataType.UUID })
+  UserId: UUID;
+
+  @BelongsTo(() => User)
+  user: User;
 }
 
 export const plansProviders = [

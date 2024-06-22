@@ -33,10 +33,4 @@ export class AuthController {
   sigIn(@Body() body: SignInDto) {
     return this.authService.signIn(body);
   }
-
-  @UseGuards(AuthGuard)
-  @Get('me')
-  me(@Request() req) {
-    return req.user;
-  }
 }

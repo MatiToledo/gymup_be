@@ -17,7 +17,7 @@ export class PlanService {
     private readonly planRepository: PlanRepository,
   ) {}
 
-  async create(createPlanDto: CreatePlanDto) {
+  async create(createPlanDto: CreatePlanDto, UserId: UUID) {
     const allExercises = await this.exerciseService.findAll();
     const ai_plan: PlanAI = await generateValidPlanWithAI({
       ...createPlanDto,
@@ -32,6 +32,7 @@ export class PlanService {
       experienceLevel: ai_plan.experienceLevel,
       hoursPerDay: ai_plan.hoursPerDay,
       daysPerWeek: ai_plan.daysPerWeek,
+      UserId,
     });
 
     const planDayBulk = ai_plan.days.map((day) => ({
